@@ -62,7 +62,7 @@ foreach(ts3sdk_LIBRARY ${ts3sdk_LIBRARIES})
 		
 		message(STATUS "Found DLL file for " ${ts3sdk_LIBRARY} " at " ${FOUND_${ts3sdk_LIBRARY}_FILE})
 		set_target_properties(${ts3sdk_LIBRARY} PROPERTIES IMPORTED_LOCATION ${FOUND_${ts3sdk_LIBRARY}_FILE})
-		list(APPEND ts3sdk_LIBRARY_FILES ${FOUND_${ts3sdk_LIBRARY}_FILE_FULL})
+		list(APPEND ts3sdk_LIBRARY_FILES ${FOUND_${ts3sdk_LIBRARY}_FILE})
 	else()
 		# For other systems, we just set the .so/.dylib file we found.
 		set_target_properties(${ts3sdk_LIBRARY} PROPERTIES IMPORTED_LOCATION ${FOUND_${ts3sdk_LIBRARY}})
