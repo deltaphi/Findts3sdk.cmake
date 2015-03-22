@@ -1,5 +1,5 @@
 # Find the INCLULDE and LIBRARY path
-find_path(ts3sdk_INCLUDE_DIR NAMES clientlib.h HINTS ${CMAKE_PREFIX_PATH}/include)
+find_path(ts3sdk_INCLUDE_DIR NAMES clientlib.h PATH_SUFFIXES bin)
 list(APPEND ts3sdk_INCLUDE_DIRS ${ts3sdk_INCLUDE_DIR})
 
 # Set the library to use
@@ -43,12 +43,21 @@ foreach(ts3sdk_LIBRARY ${ts3sdk_LIBRARIES})
 	add_library(${ts3sdk_LIBRARY} SHARED IMPORTED)
 	find_library(FOUND_${ts3sdk_LIBRARY} NAME ${ts3sdk_LIBRARY} HINTS ${CMAKE_PREFIX_PATH}/bin)
 	message(STATUS "Found Library File for " ${ts3sdk_LIBRARY} " at " ${FOUND_${ts3sdk_LIBRARY}})
-	list(APPEND ts3sdk_LIBRARY_FILES ${FOUND_${ts3sdk_LIBRARY}})
+	
 	if (WIN32)
+		# For windows, we found the LIB file. Set it as IMPORTED_IMPLIB.
 		set_target_properties(${ts3sdk_LIBRARY} PROPERTIES IMPORTED_IMPLIB ${FOUND_${ts3sdk_LIBRARY}})
-		# How to find the DLL file and store it in IMPORTED_LOCATION?
+		
+		# Heuristically get the name and location of the corresponding DLL file, so a project can copy the file
+		get_filename_component(FOUND_${ts3sdk_LIBRARY}_DIR ${FOUND_${ts3sdk_LIBRARY}} DIRECTORY)
+		get_filename_component(FOUND_${ts3sdk_LIBRARY}_FILE ${FOUND_${ts3sdk_LIBRARY}} NAME_WE)
+		set(FOUND_${ts3sdk_LIBRARY}_FILE_FULL ${FOUND_${ts3sdk_LIBRARY}_DIR}/../bin/${FOUND_${ts3sdk_LIBRARY}_FILE}.dll)
+		message(STATUS "Found DLL file for " ${ts3sdk_LIBRARY} " at " ${FOUND_${ts3sdk_LIBRARY}_FILE_FULL})
+		set_target_properties(${ts3sdk_LIBRARY} PROPERTIES IMPORTED_LOCATION ${FOUND_${ts3sdk_LIBRARY}_FILE_FULL})
+		list(APPEND ts3sdk_LIBRARY_FILES ${FOUND_${ts3sdk_LIBRARY}_FILE_FULL})
 	else()
+		# For other systems, we just set the .so/.dylib file we found.
 		set_target_properties(${ts3sdk_LIBRARY} PROPERTIES IMPORTED_LOCATION ${FOUND_${ts3sdk_LIBRARY}})
+		list(APPEND ts3sdk_LIBRARY_FILES ${FOUND_${ts3sdk_LIBRARY}})
 	endif()
 endforeach(ts3sdk_LIBRARY)
-
