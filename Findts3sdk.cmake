@@ -1,5 +1,5 @@
 # Find the INCLULDE and LIBRARY path
-find_path(ts3sdk_INCLUDE_DIR NAMES clientlib.h)
+find_path(ts3sdk_INCLUDE_DIR NAMES clientlib.h teamspeak/clientlib.h)
 list(APPEND ts3sdk_INCLUDE_DIRS ${ts3sdk_INCLUDE_DIR})
 
 # Set the library to use
